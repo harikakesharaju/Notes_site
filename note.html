@@ -1,0 +1,147 @@
+<html>
+    <head>
+    <meta character="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;1,200&display=swap" rel="stylesheet">
+<style>
+    body{
+        padding:0;
+        margin:0;
+        background: linear-gradient(to left,lightblue,lightgreen);
+        font-family: 'Courier New',Courier,monospace;
+       
+    }
+    .headi{
+        color:darkblue;
+        text-align: center;
+        padding-top:10px; 
+    }
+    .text{
+        text-align: center;
+        color:darkblue;
+    }
+    .app{
+        display: grid;
+        grid-template-columns: repeat(auto-fill,300px);
+        gap:40px;
+        justify-content: center;
+        padding:50px;
+    }
+    .notec{
+       padding:15px;
+        border-radius: 5px;
+        resize: none;
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        font-size: 18px;
+        height: 250px;
+        color:darkblue;
+        border: none;
+        outline: none;
+        background: rgba(255,255,255,0.1);
+        box-sizing: border-box;
+    }
+    .notec::placeholder{
+        color:grey;
+        opacity:50%;
+    }
+    .notec:hover,.note:focus{
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        transition: all 300ms ease;
+    }
+    
+    .btnn{
+        height:250px;
+        border-color: rgba(255,255,255,0.37);
+        background: rgba(255,255,255,0.27);
+        border-radius: 5px;
+        font-weight: 700;
+        font-size: 70px;
+        color:rgba(0,0,0,0.3);
+        cursor: pointer;
+        border: none;
+    }
+    .btnn:hover{
+        background: rgba(255,255,255,0.5);
+        color: rgba(0,0,0,0.6);
+        transition: all 0.3s ease;
+    }
+
+</style>
+</head>
+<body>
+<h1 class="headi">Note App</h1>
+<p class="text">double Click to remove note </p>
+    <div class="app" id="app">
+    
+     
+    <button class="btnn" id="btnn">+</button>
+    </div>
+<script>
+    const btnn=document.getElementById("btnn");
+    const app=document.getElementById("app");
+    getnote().forEach((note)=>{
+        const noteel=createnote(note.id,note.content);
+        app.insertBefore(noteel,btnn);
+    });
+    function createnote(id,content){
+       const ele=document.createElement("textarea");
+        ele.classList.add("notec");
+        ele.placeholder="empty";
+        ele.value=content;
+        
+        ele.addEventListener("dblclick",()=>{
+            const warn=confirm("do you want to delete this note?")
+            if(warn){
+                delnote(id,ele);
+            }
+        })
+        
+        ele.addEventListener("input",()=>{
+            updatenote(id,ele.value)
+        })
+        return ele;
+    }
+    function delnote(id,ele){
+        const notes=getnote();
+        const newnotes=notes.filter(n=>n.id!=id)
+        savenote(newnotes)
+        console.log(newnotes)
+    }
+    function updatenote(id,content){
+        const notes=getnote()
+        const target=notes.filter((note)=>note.id==id)[0];
+        target.content=content;
+        savenote(notes);
+    }
+    
+    function addNote(){
+        const notes=getnote();
+    
+        const noteobj={
+            id:Math.floor(Math.random()*100000),
+            content:"",
+        };
+       const noteel=createnote(noteobj.id,noteobj.content)
+        app.insertBefore(noteel,btnn);
+        notes.push(noteobj);
+        savenote(notes);
+    }
+    function savenote(notes){
+        localStorage.setItem("note-app",JSON.stringify(notes))
+    }
+    
+    function getnote(){
+       return JSON.parse(localStorage.getItem("note-app") || "[]");
+    }
+    
+    btnn.addEventListener("click",addNote);
+    
+    </script>
+</body>
+</html>
